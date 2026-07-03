@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 function Navbar() {
-//   const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   function handleLogout() {
