@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
 
@@ -31,14 +31,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(function() {
-    if (token) {
-      fetchUser();
-    } else {
-      setLoading(false);
+    if (!token) {
+      const timer = window.setTimeout(() => setLoading(false), 0);
+      return () => window.clearTimeout(timer);
     }
+
+    const timer = window.setTimeout(() => {
+      void fetchUser();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [token, fetchUser]);
 
-  // REGISTER FUNCTION
   const register = useCallback(async function(userData) {
     try {
       const data = await authService.register(userData);
