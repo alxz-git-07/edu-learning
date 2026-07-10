@@ -63,7 +63,7 @@ function RegisterPage() {
         {/* Page Header */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">📚</div>
-          <h2 className="text-3xl font-bold text-gray-900">Join EduConnect</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Join EduLearning</h2>
           <p className="mt-2 text-gray-600">Create your account and start learning!</p>
         </div>
 
