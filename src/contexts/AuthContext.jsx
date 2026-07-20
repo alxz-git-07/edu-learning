@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
       setToken(access_token);
       setUser(user);
       
-      toast.success('Welcome back! 🎉');
+      toast.success('Welcome back! ');
       return { success: true, user };
     } catch (error) {
       const message = error.message || 'Login failed';
