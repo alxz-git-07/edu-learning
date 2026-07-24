@@ -22,11 +22,11 @@ class User(db.Model):
     full_name = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='student')
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -71,11 +71,11 @@ class UserProfile(db.Model):
     experience_level = db.Column(db.String(20), nullable=True)
     phone = db.Column(db.String(50), nullable=True)
     dob = db.Column(db.Date, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -87,8 +87,7 @@ class UserProfile(db.Model):
             name='ck_user_profiles_experience_level'
         ),
     )
-
-
+    
 class Course(db.Model):
     __tablename__ = 'courses'
 
@@ -98,11 +97,11 @@ class Course(db.Model):
     tm_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     level = db.Column(db.String(20), nullable=True)
     is_published = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -132,8 +131,8 @@ class CourseEnrollment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -157,8 +156,8 @@ class Lesson(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -174,11 +173,11 @@ class Assignment(db.Model):
     description = db.Column(db.Text, nullable=False)
     instructions = db.Column(db.Text, nullable=True)
     due_date = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -193,16 +192,16 @@ class AssignmentSubmission(db.Model):
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignments.id'), nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     submission = db.Column(db.Text, nullable=True)
-    submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    submitted_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     graded_at = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(50), default='submitted', nullable=False)
     score = db.Column(db.Integer, nullable=True)
     graded_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     updated_at = db.Column(
         db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False
     )
 
@@ -219,7 +218,7 @@ class CourseLesson(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
 
     lesson = db.relationship('Lesson')
     course = db.relationship('Course', back_populates='course_lessons')
