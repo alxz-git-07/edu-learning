@@ -1,6 +1,7 @@
-from sqlalchemy import MetaData, CheckConstraint, UniqueConstraint
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import CheckConstraint, MetaData, UniqueConstraint
 
 metadata = MetaData(naming_convention={
     "ix": 'ix_%(column_0_label)s',

@@ -1,18 +1,19 @@
 
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
 from app import app
 from models import (
-    db,
-    User,
-    UserProfile,
-    Course,
-    CourseEnrollment,
-    Lesson,
     Assignment,
     AssignmentSubmission,
+    Course,
+    CourseEnrollment,
     CourseLesson,
+    Lesson,
+    User,
+    UserProfile,
+    db,
 )
+
 
 def get_or_create_user(email, password, full_name, role, is_active=True):
     user = User.query.filter_by(email=email).first()
@@ -121,7 +122,7 @@ with app.app_context():
             title="Python Quiz",
             description="A short quiz covering Python basics.",
             instructions="Answer all questions and submit your responses.",
-            due_date=datetime.now() + timedelta(days=7),
+            due_date=datetime.now(timezone.utc) + timedelta(days=7),
         )
         db.session.add(assignment)
         db.session.flush()
@@ -144,11 +145,11 @@ with app.app_context():
             assignment=assignment,
             student=student,
             submission="Completed the quiz successfully.",
-            submitted_at=datetime.now(),
+            submitted_at=datetime.now(timezone.utc),
             status="submitted",
             score=90,
             graded_by=instructor.id,
-            graded_at=datetime.now(),
+            graded_at=datetime.now(timezone.utc),
         )
         db.session.add(submission)
 
@@ -209,7 +210,7 @@ with app.app_context():
             title="Data Science Homework",
             description="A short assignment on data analysis basics.",
             instructions="Submit your findings in a brief report.",
-            due_date=datetime.now() + timedelta(days=10),
+            due_date=datetime.now(timezone.utc) + timedelta(days=10),
         )
         db.session.add(new_assignment)
         db.session.flush()

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 function HomePage() {
   return (
     <div className="space-y-8">
-      <section className="rounded-3xl bg-gradient-to-r from-slate-900 to-blue-700 p-10 text-white shadow-sm">
+      <section className="rounded-3xl bg-linear-to-r from-slate-900 to-blue-700 p-10 text-white shadow-sm">
         <p className="text-sm uppercase tracking-[0.3em] text-blue-100">EduLearning</p>
         <h1 className="mt-3 text-4xl font-semibold">Learn from expert-led courses built for real progress.</h1>
         <p className="mt-4 max-w-2xl text-lg text-blue-50">
