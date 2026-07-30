@@ -2,6 +2,8 @@ import { createContext, useState, useContext, useEffect, useCallback } from 'rea
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
 
+
+
 const AuthContext = createContext();
 
 export function useAuth() {
@@ -21,14 +23,20 @@ export function AuthProvider({ children }) {
     try {
       const userData = await authService.getCurrentUser();
       setUser(userData);
+      return userData;
     } catch (error) {
       console.error('Error fetching user:', error);
       localStorage.removeItem('token');
       setToken(null);
+      return null;
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const refreshUser = useCallback(async function() {
+    return fetchUser();
+  }, [fetchUser]);
 
   useEffect(function() {
     if (!token) {
@@ -99,6 +107,7 @@ export function AuthProvider({ children }) {
     logout,
     register,
     resetPassword,
+    refreshUser,
     isAuthenticated: !!user,
     token
   };

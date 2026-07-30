@@ -43,5 +43,11 @@ export const authService = {
   },
   async getCurrentUser() {
     return request('/auth/me');
+  },
+  async updateProfile(profileData) {
+    return request('/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(profileData)
+    });
   }
 };

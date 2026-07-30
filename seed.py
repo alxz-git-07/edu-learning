@@ -1,4 +1,3 @@
-
 from datetime import date, datetime, timedelta, timezone
 
 from app import app
@@ -13,6 +12,7 @@ from models import (
     UserProfile,
     db,
 )
+from resources import bcrypt
 
 
 def get_or_create_user(email, password, full_name, role, is_active=True):
@@ -22,7 +22,7 @@ def get_or_create_user(email, password, full_name, role, is_active=True):
 
     user = User(
         email=email,
-        password=password,
+        password=bcrypt.generate_password_hash(password).decode("utf-8"),
         full_name=full_name,
         role=role,
         is_active=is_active,
@@ -30,6 +30,7 @@ def get_or_create_user(email, password, full_name, role, is_active=True):
     db.session.add(user)
     db.session.flush()
     return user
+
 
 def get_or_create_profile(user, bio, experience_level, phone, dob):
     profile = UserProfile.query.filter_by(user_id=user.id).first()
@@ -46,7 +47,10 @@ def get_or_create_profile(user, bio, experience_level, phone, dob):
     db.session.add(profile)
     return profile
 
-def get_or_create_course(title, description, tm_user, level="beginner", is_published=True):
+
+def get_or_create_course(
+    title, description, tm_user, level="beginner", is_published=True
+):
     course = Course.query.filter_by(title=title).first()
     if course:
         return course
@@ -61,6 +65,7 @@ def get_or_create_course(title, description, tm_user, level="beginner", is_publi
     db.session.add(course)
     db.session.flush()
     return course
+
 
 with app.app_context():
     db.create_all()
@@ -103,7 +108,9 @@ with app.app_context():
         True,
     )
 
-    lesson = Lesson.query.filter_by(course_id=course.id, title="Introduction to Variables").first()
+    lesson = Lesson.query.filter_by(
+        course_id=course.id, title="Introduction to Variables"
+    ).first()
     if not lesson:
         lesson = Lesson(
             course=course,
@@ -115,7 +122,9 @@ with app.app_context():
         db.session.add(lesson)
         db.session.flush()
 
-    assignment = Assignment.query.filter_by(course_id=course.id, title="Python Quiz").first()
+    assignment = Assignment.query.filter_by(
+        course_id=course.id, title="Python Quiz"
+    ).first()
     if not assignment:
         assignment = Assignment(
             course=course,
@@ -127,7 +136,9 @@ with app.app_context():
         db.session.add(assignment)
         db.session.flush()
 
-    enrollment = CourseEnrollment.query.filter_by(student_id=student.id, course_id=course.id).first()
+    enrollment = CourseEnrollment.query.filter_by(
+        student_id=student.id, course_id=course.id
+    ).first()
     if not enrollment:
         enrollment = CourseEnrollment(
             student_id=student.id,
@@ -153,7 +164,9 @@ with app.app_context():
         )
         db.session.add(submission)
 
-    course_lesson = CourseLesson.query.filter_by(course_id=course.id, lesson_id=lesson.id).first()
+    course_lesson = CourseLesson.query.filter_by(
+        course_id=course.id, lesson_id=lesson.id
+    ).first()
     if not course_lesson:
         course_lesson = CourseLesson(
             lesson=lesson,
@@ -191,7 +204,9 @@ with app.app_context():
         True,
     )
 
-    new_lesson = Lesson.query.filter_by(course_id=new_course.id, title="Intro to Data Analysis").first()
+    new_lesson = Lesson.query.filter_by(
+        course_id=new_course.id, title="Intro to Data Analysis"
+    ).first()
     if not new_lesson:
         new_lesson = Lesson(
             course=new_course,
@@ -203,7 +218,9 @@ with app.app_context():
         db.session.add(new_lesson)
         db.session.flush()
 
-    new_assignment = Assignment.query.filter_by(course_id=new_course.id, title="Data Science Homework").first()
+    new_assignment = Assignment.query.filter_by(
+        course_id=new_course.id, title="Data Science Homework"
+    ).first()
     if not new_assignment:
         new_assignment = Assignment(
             course=new_course,
@@ -219,7 +236,9 @@ with app.app_context():
     for email, _, _, _ in extra_users:
         user = User.query.filter_by(email=email).first()
         if user:
-            enrollment = CourseEnrollment.query.filter_by(student_id=user.id, course_id=new_course.id).first()
+            enrollment = CourseEnrollment.query.filter_by(
+                student_id=user.id, course_id=new_course.id
+            ).first()
             if not enrollment:
                 db.session.add(
                     CourseEnrollment(

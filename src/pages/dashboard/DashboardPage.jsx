@@ -13,9 +13,6 @@ function DashboardPage() {
         <h1 className="mt-2 text-2xl font-semibold text-gray-900">
           {user?.full_name || user?.username || 'Learner'}
         </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Here is your learning hub for today. Track your progress and jump into the next lesson.
-        </p>
       </div>
 
       {role === 'instructor' ? <InstructorDashboard /> : <StudentDashboard />}
