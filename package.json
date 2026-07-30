@@ -1,5 +1,5 @@
 {
-  "name": "recipe-book-app",
+  "name": "edu-learning",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,8 @@
     "@tailwindcss/vite": "^4.3.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-router-dom": "^7.1.0",
+    "react-toastify": "^11.0.0",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
