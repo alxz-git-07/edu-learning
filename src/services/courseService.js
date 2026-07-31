@@ -7,6 +7,7 @@ async function request(path, options = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
+  
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
@@ -21,6 +22,7 @@ async function request(path, options = {}) {
   return data;
 }
 
+
 export const courseService = {
   getCourses() {
     return request('/courses');
@@ -33,10 +35,12 @@ export const courseService = {
   getCourseLessons(id) {
     return request(`/courses/${id}/lessons`);
   },
+  
 
   getCourseAssignments(id) {
     return request(`/courses/${id}/assignments`);
   },
+  
 
   getMyCourses() {
     return request('/my-courses');
