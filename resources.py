@@ -347,6 +347,7 @@ class AssignmentSubmitResource(Resource):
         return assignment_submission_schema.dump(submission), 201
 
 
+
 def register_api_resources(api):
     api.add_resource(AuthRegister, "/auth/register")
     api.add_resource(AuthLogin, "/auth/login")
