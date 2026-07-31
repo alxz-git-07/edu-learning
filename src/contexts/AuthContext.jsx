@@ -1,120 +1,120 @@
-// import { createContext, useState, useContext, useEffect, useCallback } from 'react';
-// import { authService } from '../services/authService';
-// import { toast } from 'react-toastify';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { authService } from '../services/authService';
+import { toast } from 'react-toastify';
 
 
 
-// const AuthContext = createContext();
+const AuthContext = createContext();
 
-// export function useAuth() {
-//   const context = useContext(AuthContext);
-//   if (!context) {
-//     throw new Error('useAuth must be used within AuthProvider');
-//   }
-//   return context;
-// }
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+}
 
-// export function AuthProvider({ children }) {
-//   const [user, setUser] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [token, setToken] = useState(localStorage.getItem('token'));
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-//   const fetchUser = useCallback(async function() {
-//     try {
-//       const userData = await authService.getCurrentUser();
-//       setUser(userData);
-//       return userData;
-//     } catch (error) {
-//       console.error('Error fetching user:', error);
-//       localStorage.removeItem('token');
-//       setToken(null);
-//       return null;
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
+  const fetchUser = useCallback(async function() {
+    try {
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      localStorage.removeItem('token');
+      setToken(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-//   const refreshUser = useCallback(async function() {
-//     return fetchUser();
-//   }, [fetchUser]);
+  const refreshUser = useCallback(async function() {
+    return fetchUser();
+  }, [fetchUser]);
 
-//   useEffect(function() {
-//     if (!token) {
-//       const timer = window.setTimeout(() => setLoading(false), 0);
-//       return () => window.clearTimeout(timer);
-//     }
+  useEffect(function() {
+    if (!token) {
+      const timer = window.setTimeout(() => setLoading(false), 0);
+      return () => window.clearTimeout(timer);
+    }
 
-//     const timer = window.setTimeout(() => {
-//       void fetchUser();
-//     }, 0);
+    const timer = window.setTimeout(() => {
+      void fetchUser();
+    }, 0);
 
-//     return () => window.clearTimeout(timer);
-//   }, [token, fetchUser]);
+    return () => window.clearTimeout(timer);
+  }, [token, fetchUser]);
 
-//   const register = useCallback(async function(userData) {
-//     try {
-//       const data = await authService.register(userData);
-//       toast.success('Registration successful! Please login.');
-//       return { success: true, data };
-//     } catch (error) {
-//       const message = error.message || 'Registration failed';
-//       toast.error(message);
-//       return { success: false, error: message };
-//     }
-//   }, []);
+  const register = useCallback(async function(userData) {
+    try {
+      const data = await authService.register(userData);
+      toast.success('Registration successful! Please login.');
+      return { success: true, data };
+    } catch (error) {
+      const message = error.message || 'Registration failed';
+      toast.error(message);
+      return { success: false, error: message };
+    }
+  }, []);
 
-//   const login = useCallback(async function(email, password) {
-//     try {
-//       const data = await authService.login(email, password);
-//       const { access_token, user } = data;
+  const login = useCallback(async function(email, password) {
+    try {
+      const data = await authService.login(email, password);
+      const { access_token, user } = data;
       
-//       localStorage.setItem('token', access_token);
-//       setToken(access_token);
-//       setUser(user);
+      localStorage.setItem('token', access_token);
+      setToken(access_token);
+      setUser(user);
       
-//       toast.success('Welcome back! ');
-//       return { success: true, user };
-//     } catch (error) {
-//       const message = error.message || 'Login failed';
-//       toast.error(message);
-//       return { success: false, error: message };
-//     }
-//   }, []);
+      toast.success('Welcome back! ');
+      return { success: true, user };
+    } catch (error) {
+      const message = error.message || 'Login failed';
+      toast.error(message);
+      return { success: false, error: message };
+    }
+  }, []);
 
-//   const logout = useCallback(function() {
-//     localStorage.removeItem('token');
-//     setToken(null);
-//     setUser(null);
-//     toast.info('Logged out successfully');
-//   }, []);
+  const logout = useCallback(function() {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+    toast.info('Logged out successfully');
+  }, []);
 
-//   const resetPassword = useCallback(async function(email) {
-//     try {
-//       await authService.resetPassword(email);
-//       toast.success('Password reset link sent to your email');
-//       return { success: true };
-//     } catch (error) {
-//       const message = error.message || 'Password reset failed';
-//       toast.error(message);
-//       return { success: false, error: message };
-//     }
-//   }, []);
+  const resetPassword = useCallback(async function(email) {
+    try {
+      await authService.resetPassword(email);
+      toast.success('Password reset link sent to your email');
+      return { success: true };
+    } catch (error) {
+      const message = error.message || 'Password reset failed';
+      toast.error(message);
+      return { success: false, error: message };
+    }
+  }, []);
 
-//   const value = {
-//     user,
-//     loading,
-//     login,
-//     logout,
-//     register,
-//     resetPassword,
-//     refreshUser,
-//     isAuthenticated: !!user,
-//     token
-//   };
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+    resetPassword,
+    refreshUser,
+    isAuthenticated: !!user,
+    token
+  };
 
-//   return (
-//     <AuthContext.Provider value={value}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
