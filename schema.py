@@ -12,6 +12,7 @@ class UserSchema(Schema):
     updated_at = fields.DateTime(dump_only=True)
     profile = fields.Nested("UserProfileSchema", dump_only=True, exclude=("user",))
 
+    
 
 class UserProfileSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -41,6 +42,7 @@ class CourseSchema(Schema):
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     tm_user = fields.Nested("UserSchema", only=("id", "email", "full_name"), dump_only=True)
+
 
 
 class CourseEnrollmentSchema(Schema):
