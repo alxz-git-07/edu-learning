@@ -108,7 +108,7 @@ class CourseLessonSchema(Schema):
     course = fields.Nested("CourseSchema", only=("id", "title"), dump_only=True)
 
 
-# Single instances
+
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
