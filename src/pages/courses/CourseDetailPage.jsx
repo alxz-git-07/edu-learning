@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../contexts/AuthContext';
 import { courseService } from '../../services/courseService';
 
 function CourseDetailPage() {
   const { id } = useParams();
+  const { isAuthenticated } = useAuth();
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
 
   useEffect(() => {
     async function loadCourse() {
@@ -33,6 +38,28 @@ function CourseDetailPage() {
     }
   }, [id]);
 
+  async function handleEnroll() {
+    if (!isAuthenticated) {
+      toast.error('Please sign in before enrolling in a course.');
+      return;
+    }
+
+    setEnrolling(true);
+    setError('');
+
+    try {
+      await courseService.enrollInCourse(id);
+      setEnrolled(true);
+      toast.success('Enrollment successful.');
+    } catch (err) {
+      const message = err.message || 'Unable to enroll in this course.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setEnrolling(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {loading ? (
@@ -56,6 +83,20 @@ function CourseDetailPage() {
                 <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Instructor</p>
                 <p className="mt-2 text-lg font-semibold text-slate-900">{course.tm_user?.full_name || 'Unknown'}</p>
               </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleEnroll}
+                disabled={enrolling || enrolled}
+                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+              >
+                {enrolling ? 'Enrolling...' : enrolled ? 'Enrolled' : 'Enroll in this course'}
+              </button>
+              {!isAuthenticated && (
+                <span className="text-sm text-slate-600">Sign in to enroll in this course.</span>
+              )}
             </div>
           </div>
 
