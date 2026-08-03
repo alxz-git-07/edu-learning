@@ -12,6 +12,7 @@ marshmallow = "*"
 structlog = "*"
 flask-restful = "*"
 flask-bcrypt = "*"
+flask-cors = "*"
 psycopg2-binary = "*"
 gunicorn = "*"
 

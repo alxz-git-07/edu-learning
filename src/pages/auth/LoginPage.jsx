@@ -85,6 +85,13 @@ function LoginPage() {
             Create one
           </Link>
         </p>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          forgot your password?{' '}
+          <Link to="/reset-password" className="font-semibold text-blue-600 hover:text-blue-700">
+            Reset it
+          </Link>
+        </p>
+
       </div>
     </div>
   );

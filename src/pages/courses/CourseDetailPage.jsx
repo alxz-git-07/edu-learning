@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -20,6 +21,7 @@ function CourseDetailPage() {
       try {
         const courseData = await courseService.getCourse(id);
         setCourse(courseData);
+        setEnrolled(Boolean(courseData.enrolled));
         const [lessonsData, assignmentsData] = await Promise.all([
           courseService.getCourseLessons(id),
           courseService.getCourseAssignments(id),
@@ -86,14 +88,21 @@ function CourseDetailPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={handleEnroll}
-                disabled={enrolling || enrolled}
-                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
-              >
-                {enrolling ? 'Enrolling...' : enrolled ? 'Enrolled' : 'Enroll in this course'}
-              </button>
+              {!enrolled && (
+                <button
+                  type="button"
+                  onClick={handleEnroll}
+                  disabled={enrolling}
+                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                >
+                  {enrolling ? 'Enrolling...' : 'Enroll in this course'}
+                </button>
+              )}
+              {enrolled && (
+                <span className="rounded-lg bg-green-100 px-4 py-2.5 text-sm font-medium text-green-800">
+                  You are already enrolled in this course.
+                </span>
+              )}
               {!isAuthenticated && (
                 <span className="text-sm text-slate-600">Sign in to enroll in this course.</span>
               )}
@@ -124,9 +133,14 @@ function CourseDetailPage() {
               ) : (
                 <ul className="mt-4 space-y-3">
                   {assignments.map((assignment) => (
-                    <li key={assignment.id} className="rounded-2xl border border-slate-200 p-4">
-                      <p className="font-semibold text-slate-900">{assignment.title}</p>
-                      <p className="mt-1 text-sm text-slate-600">{assignment.description}</p>
+                    <li key={assignment.id} className="rounded-2xl border border-slate-200 p-0">
+                      <Link
+                        to={`/courses/${id}/assignments/${assignment.id}`}
+                        className="block rounded-2xl p-4 hover:border-slate-300 hover:bg-slate-50 transition"
+                      >
+                        <p className="font-semibold text-slate-900">{assignment.title}</p>
+                        <p className="mt-1 text-sm text-slate-600">{assignment.description}</p>
+                      </Link>
                     </li>
                   ))}
                 </ul>
