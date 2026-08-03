@@ -1,20 +1,27 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../contexts/AuthContext';
 import { courseService } from '../../services/courseService';
 
 function CourseDetailPage() {
   const { id } = useParams();
+  const { isAuthenticated } = useAuth();
   const [course, setCourse] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrolled, setEnrolled] = useState(false);
 
   useEffect(() => {
     async function loadCourse() {
       try {
         const courseData = await courseService.getCourse(id);
         setCourse(courseData);
+        setEnrolled(Boolean(courseData.enrolled));
         const [lessonsData, assignmentsData] = await Promise.all([
           courseService.getCourseLessons(id),
           courseService.getCourseAssignments(id),
@@ -32,6 +39,28 @@ function CourseDetailPage() {
       void loadCourse();
     }
   }, [id]);
+
+  async function handleEnroll() {
+    if (!isAuthenticated) {
+      toast.error('Please sign in before enrolling in a course.');
+      return;
+    }
+
+    setEnrolling(true);
+    setError('');
+
+    try {
+      await courseService.enrollInCourse(id);
+      setEnrolled(true);
+      toast.success('Enrollment successful.');
+    } catch (err) {
+      const message = err.message || 'Unable to enroll in this course.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setEnrolling(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -56,6 +85,27 @@ function CourseDetailPage() {
                 <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Instructor</p>
                 <p className="mt-2 text-lg font-semibold text-slate-900">{course.tm_user?.full_name || 'Unknown'}</p>
               </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {!enrolled && (
+                <button
+                  type="button"
+                  onClick={handleEnroll}
+                  disabled={enrolling}
+                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                >
+                  {enrolling ? 'Enrolling...' : 'Enroll in this course'}
+                </button>
+              )}
+              {enrolled && (
+                <span className="rounded-lg bg-green-100 px-4 py-2.5 text-sm font-medium text-green-800">
+                  You are already enrolled in this course.
+                </span>
+              )}
+              {!isAuthenticated && (
+                <span className="text-sm text-slate-600">Sign in to enroll in this course.</span>
+              )}
             </div>
           </div>
 
@@ -83,9 +133,14 @@ function CourseDetailPage() {
               ) : (
                 <ul className="mt-4 space-y-3">
                   {assignments.map((assignment) => (
-                    <li key={assignment.id} className="rounded-2xl border border-slate-200 p-4">
-                      <p className="font-semibold text-slate-900">{assignment.title}</p>
-                      <p className="mt-1 text-sm text-slate-600">{assignment.description}</p>
+                    <li key={assignment.id} className="rounded-2xl border border-slate-200 p-0">
+                      <Link
+                        to={`/courses/${id}/assignments/${assignment.id}`}
+                        className="block rounded-2xl p-4 hover:border-slate-300 hover:bg-slate-50 transition"
+                      >
+                        <p className="font-semibold text-slate-900">{assignment.title}</p>
+                        <p className="mt-1 text-sm text-slate-600">{assignment.description}</p>
+                      </Link>
                     </li>
                   ))}
                 </ul>

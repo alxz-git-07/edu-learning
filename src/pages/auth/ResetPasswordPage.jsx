@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 function ResetPasswordPage() {
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    const result = await resetPassword(email);
+    if (result.success) {
+      setSubmitted(true);
+    }
+
+    setLoading(false);
   }
 
   return (
@@ -38,8 +48,12 @@ function ResetPasswordPage() {
                 placeholder="you@example.com"
               />
             </div>
-            <button type="submit" className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700">
-              Send reset link
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+            >
+              {loading ? 'Sending...' : 'Send reset link'}
             </button>
           </form>
         )}

@@ -1,9 +1,10 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 from flask import current_app, request
 from flask_bcrypt import Bcrypt
 from flask_restful import Resource, abort
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
+import structlog
 
 from models import (
     Assignment,
@@ -19,14 +20,17 @@ from schema import (
     assignment_schema,
     assignment_submission_schema,
     assignments_schema,
+    course_enrollment_schema,
     course_schema,
     courses_schema,
     lesson_schema,
     lessons_schema,
     user_schema,
+    users_schema,
 )
 
 bcrypt = Bcrypt()
+logger = structlog.get_logger()
 
 
 def get_token_serializer():
@@ -203,9 +207,38 @@ class PasswordReset(Resource):
         # In a production app, this would send a secure reset email.
         exists = User.query.filter_by(email=email).first() is not None
         if exists:
-            current_app.logger.info("Password reset requested for %s", email)
+            logger.info("password_reset_requested", email=email)
 
         return {"message": "If that email exists, a password reset link has been sent."}
+
+
+class AdminUsersResource(Resource):
+    def get(self):
+        user = require_auth()
+        if user.role != "admin":
+            abort(403, message="Admin access required.")
+
+        users = User.query.order_by(User.created_at.desc()).all()
+        return users_schema.dump(users)
+
+
+class AdminUserDetailResource(Resource):
+    def delete(self, user_id):
+        user = require_auth()
+        if user.role != "admin":
+            abort(403, message="Admin access required.")
+
+        target_user = User.query.get(user_id)
+        if not target_user:
+            abort(404, message="User not found.")
+
+        if target_user.id == user.id:
+            abort(400, message="You cannot delete your own account.")
+
+        db.session.delete(target_user)
+        db.session.commit()
+
+        return {"message": "User deleted successfully."}
 
 
 class CoursesResource(Resource):
@@ -252,7 +285,20 @@ class CourseDetailResource(Resource):
             if not current_user or current_user.id != course.tm_id:
                 abort(404, message="Course not found.")
 
-        return course_schema.dump(course)
+        course_data = course_schema.dump(course)
+        current_user = get_current_user()
+        if current_user:
+            enrollment = CourseEnrollment.query.filter_by(
+                student_id=current_user.id,
+                course_id=course.id,
+            ).first()
+            course_data["enrolled"] = bool(enrollment)
+            course_data["enrollment_status"] = enrollment.status if enrollment else None
+        else:
+            course_data["enrolled"] = False
+            course_data["enrollment_status"] = None
+
+        return course_data
 
 
 class CourseLessonsResource(Resource):
@@ -338,7 +384,7 @@ class AssignmentSubmitResource(Resource):
             assignment_id=assignment.id,
             student_id=user.id,
             submission=submission_text,
-            submitted_at=datetime.now(datetime.timezone.utc),
+            submitted_at=datetime.now(timezone.utc),
             status="submitted",
         )
         db.session.add(submission)
@@ -347,12 +393,13 @@ class AssignmentSubmitResource(Resource):
         return assignment_submission_schema.dump(submission), 201
 
 
-
 def register_api_resources(api):
     api.add_resource(AuthRegister, "/auth/register")
     api.add_resource(AuthLogin, "/auth/login")
     api.add_resource(AuthMe, "/auth/me")
     api.add_resource(PasswordReset, "/auth/reset-password")
+    api.add_resource(AdminUsersResource, "/admin/users")
+    api.add_resource(AdminUserDetailResource, "/admin/users/<int:user_id>")
     api.add_resource(CoursesResource, "/courses")
     api.add_resource(CourseDetailResource, "/courses/<int:course_id>")
     api.add_resource(CourseLessonsResource, "/courses/<int:course_id>/lessons")

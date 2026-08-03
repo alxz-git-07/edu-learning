@@ -16,6 +16,7 @@ import AssignmentPage from './pages/assignments/AssignmentPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import MyCoursesPage from './pages/courses/MyCoursesPage';
 import SettingsPage from './pages/settings/SettingsPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import NotFound from './pages/NotFound';
 
 function AppRoutes() {
@@ -79,7 +80,7 @@ function AppRoutes() {
                 }
               />
               <Route
-                path="/assignments/:id"
+                path="/courses/:id/assignments/:assignmentId"
                 element={
                   <ProtectedRoute>
                     <AssignmentPage />
@@ -99,7 +100,15 @@ function AppRoutes() {
                 element={
                   <ProtectedRoute>
                     <SettingsPage />
-                  </ProtectedRoute>   
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
                 }
               />
 

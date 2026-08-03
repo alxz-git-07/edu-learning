@@ -5,7 +5,8 @@ const links = [
   { to: '/courses', label: 'Browse Courses' },
   { to: '/my-courses', label: 'My Courses' },
   { to: '/profile', label: 'Profile' },
-  { to: '/settings', label: 'Settings' }
+  { to: '/settings', label: 'Settings' },
+  { to: '/admin', label: 'Admin Dashboard' }
 ];
 
 function Sidebar({ currentPath }) {

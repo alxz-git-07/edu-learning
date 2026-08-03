@@ -45,4 +45,21 @@ export const courseService = {
   getMyCourses() {
     return request('/my-courses');
   },
+
+  enrollInCourse(courseId) {
+    return request(`/courses/${courseId}/enroll`, {
+      method: 'POST',
+    });
+  },
+
+  getAssignment(assignmentId) {
+    return request(`/assignments/${assignmentId}`);
+  },
+
+  submitAssignment(assignmentId, submission) {
+    return request(`/assignments/${assignmentId}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ submission }),
+    });
+  },
 };
